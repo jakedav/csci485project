@@ -61,7 +61,6 @@ public class Main extends Application {
     public static String query, query2, query3;
     private Connection conn;
     private ResultSet rs,rs1,rs2;
-    private Statement statement;
 
     public Label lblStatus = new Label();
     public Label lblNewUser = new Label("New User? Register below!");
@@ -86,8 +85,6 @@ public class Main extends Application {
     public Label yourXID2 = new Label("Stfx ID");
     public Label jobTitle2 = new Label("Job Title");
     public Label emailAddress2 = new Label("Email");
-
-    public ChoiceBox searchOptions = new ChoiceBox(FXCollections.observableArrayList("Major", "Name", "Grad Year"));
 
     @Override
     public void start(Stage primaryStage) {
@@ -132,8 +129,7 @@ public class Main extends Application {
         loginScreen.add(loginbtn2,3,8);
         loginScreen.add(backbtn2,3,9);
 
-        userSearch.add(searchOptions, 2, 1);
-        userSearch.add(searchuser, 1, 1);
+        userSearch.add(searchuser, 2, 1);
         userSearch.add(userSearching, 2, 2);
         userSearch.add(search, 2, 3);
         userSearch.add(result, 2, 5, 3, 5);
@@ -276,6 +272,76 @@ public class Main extends Application {
                     }
 
                 } catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            });
+        search.setOnAction(e -> {
+                try{
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    String uName = userSearching.getText();
+                    query2 = "select * from Userlist where FirstName ='" + uName + "'";
+                    PreparedStatement stmt1 = conn.prepareStatement(query2);
+                    rs1 = stmt1.executeQuery();
+                    result.clear();
+                    if (!rs1.next())
+                    {                            
+
+                        System.out.println("No records found");
+                    }
+                    else {
+                        do {
+
+                            int uid = (rs1.getInt("UserID")); 
+                            int xid = (rs1.getInt("StfxID"));
+                            String p =(rs1.getString("Password")); 
+                            String fn =(rs1.getString("FirstName"));
+                            String ln =(rs1.getString("LastName"));
+                            String m =(rs1.getString("Major"));
+                            String jt = (rs1.getString("JobTitle"));
+                            int gy =(rs1.getInt("GradYear"));
+                            String em = (rs1.getString("Email"));
+                            String msg = (rs1.getString("Msgs"));
+                            result.appendText("User id:"+uid+"\n"
+                                + "Stfx Id:"+xid+"\n"
+                                + "Password:"+p+"\n"
+                                + "First Name:"+fn+"\n"
+                                + "Last Name"+ln+"\n"
+                                + "Major:"+m+"\n"
+                                + "JobTitle"+xid+"\n"
+                                + "Graduation Year:"+gy+"\n"
+                                + "Email:"+em+"\n"
+                                + "Messages:"+msg+"\n");// Get data from the current row and use it
+                        } while (rs1.next());
+                    }
+                    if(rs1.next()){
+                        result.clear();
+                        int uid = (rs1.getInt("UserID")); 
+                        int xid = (rs1.getInt("StfxID"));
+                        String p =(rs1.getString("Password")); 
+                        String fn =(rs1.getString("FirstName"));
+                        String ln =(rs1.getString("LastName"));
+                        String m =(rs1.getString("Major"));
+                        String jt = (rs1.getString("JobTitle"));
+                        int gy =(rs1.getInt("GradYear"));
+                        String em = (rs1.getString("Email"));
+                        String msg = (rs1.getString("Msgs"));
+                        result.appendText("User id:"+uid+"\n"
+                            + "Stfx Id:"+xid+"\n"
+                            + "Password:"+p+"\n"
+                            + "First Name:"+fn+"\n"
+                            + "Last Name"+ln+"\n"
+                            + "Major:"+m+"\n"
+                            + "JobTitle"+xid+"\n"
+                            + "Graduation Year:"+gy+"\n"
+                            + "Email:"+em+"\n"
+                            + "Messages:"+msg+"\n");
+                    } 
+                    else{
+                        System.out.print("No matching record, try again:");
+                    }
+
+                }
+                catch (Exception ex){
                     ex.printStackTrace();
                 }
             });
