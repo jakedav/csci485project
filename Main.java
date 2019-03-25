@@ -27,7 +27,7 @@ public class Main extends Application {
     public Button editUser = new Button("Edit User");
     public Button regUserbtn = new Button("Register");
     public Button back1 = new Button("Back");
-    public Button backbtn2 = new Button("Back");
+    public Button back2 = new Button("Back");
     public Button back3 = new Button("Back");
     public Button back4 = new Button("Back");
     public Button yourProfile = new Button("Profile");
@@ -43,11 +43,13 @@ public class Main extends Application {
     public TextField StfxID = new TextField();
     public TextField password = new TextField();
     public TextField regpassword = new TextField();
+    public TextField uppassword = new TextField();
     public TextField job = new TextField();
     public TextField majorStudy = new TextField();
     public TextField yearGraduated = new TextField();
     public TextField userSearching = new TextField();
     public TextArea result = new TextArea();
+    public TextArea result1 = new TextArea();
 
     public TextField email2 = new TextField();
     public TextField firstname2 = new TextField();
@@ -58,7 +60,7 @@ public class Main extends Application {
     public TextField majorStudy2 = new TextField();
     public TextField yearGraduated2 = new TextField();
 
-    public static String query, query2, query3;
+    public static String query, query2, query3, uName, pWord;
     private Connection conn;
     private ResultSet rs,rs1,rs2;
 
@@ -77,6 +79,7 @@ public class Main extends Application {
     public Label rlblPass = new Label("Password");
     public Label searchuser = new Label("Search for user");
     public Label edituser = new Label("Edit User");
+    public Label upPassword = new Label("Password");
 
     public Label firstName2 = new Label("First Name");
     public Label lastName2 = new Label("Last Name");
@@ -94,9 +97,9 @@ public class Main extends Application {
         GridPane registerScreen = new GridPane();
         GridPane userSearch = new GridPane();
         //GridPane userEditAdmin = new GridPane();
-        //GridPane userResults = new GridPane();
-        //GridPane userEditUser = new GridPane();
-        //GridPane userProfile = new GridPane();
+        GridPane userResults = new GridPane();
+        GridPane userEditUser = new GridPane();
+        GridPane userProfile = new GridPane();
 
         startScreen.add(lblExistUser, 2, 1);
         startScreen.add(loginbtn, 2, 2);
@@ -127,7 +130,7 @@ public class Main extends Application {
         loginScreen.add(lblPass, 3, 5);
         loginScreen.add(password, 3, 6);
         loginScreen.add(loginbtn2,3,8);
-        loginScreen.add(backbtn2,3,9);
+        loginScreen.add(back2,3,9);
 
         userSearch.add(searchuser, 2, 1);
         userSearch.add(userSearching, 2, 2);
@@ -135,7 +138,7 @@ public class Main extends Application {
         userSearch.add(result, 2, 5, 3, 5);
         userSearch.add(yourProfile,3,1);
         userSearch.add(logOutUser,1,12);
-        /*
+       
         userProfile.add(editYrProfile,3,8);
         userProfile.add(back4,3,9);
 
@@ -156,19 +159,23 @@ public class Main extends Application {
         userEditUser.add(emailAddress2, 3, 4);
         userEditUser.add(email2, 3, 5);
         userEditUser.add(jobTitle2, 1, 7);
-        userEditUser.add(job2, 1, 8);*/
+        userEditUser.add(job2, 1, 8);
+        userEditUser.add(upPassword,2,7);
+        userEditUser.add(uppassword, 2, 8);
+        userEditUser.add(result1, 1,11,3,5);
 
         Scene scene1 = new Scene(startScreen, 650, 500);
         Scene scene2 = new Scene(loginScreen, 650, 500);
         Scene scene3 = new Scene(registerScreen, 650, 500);
         Scene scene4 = new Scene(userSearch, 650, 500);
-        //Scene scene5 = new Scene(userEditUser,650,500);
-        //Scene scene6 = new Scene(userProfile,650,500);
+        Scene scene5 = new Scene(userEditUser,650,500);
+        Scene scene6 = new Scene(userProfile,650,500);
+        
 
         primaryStage.setTitle("485 DB Project");
         primaryStage.setScene(scene1);
         primaryStage.show();
-
+        editYrProfile.setOnAction(e -> primaryStage.setScene(scene5));
         loginbtn.setOnAction(e -> primaryStage.setScene(scene2));
         loginbtn2.setOnAction(e -> {
                 try{
@@ -257,15 +264,15 @@ public class Main extends Application {
                             String em = (rs1.getString("Email"));
                             String msg = (rs1.getString("Msgs"));
                             result.appendText("User id:"+uid+"\n"
-                                + "Stfx Id:"+xid+"\n"
-                                + "Password:"+p+"\n"
-                                + "First Name:"+fn+"\n"
-                                + "Last Name"+ln+"\n"
-                                + "Major:"+m+"\n"
-                                + "JobTitle"+xid+"\n"
-                                + "Graduation Year:"+gy+"\n"
-                                + "Email:"+em+"\n"
-                                + "Messages:"+msg+"\n");
+                                + "Stfx Id: "+xid+"\n"
+                                + "Password: "+p+"\n"
+                                + "First Name: "+fn+"\n"
+                                + "Last Name: "+ln+"\n"
+                                + "Major: "+m+"\n"
+                                + "JobTitle: "+xid+"\n"
+                                + "Graduation Year: "+gy+"\n"
+                                + "Email: "+em+"\n"
+                                + "Messages: "+msg+"\n");
                         }}
                     else{
                         System.out.println("Registration Unsuccesful");
@@ -278,8 +285,8 @@ public class Main extends Application {
         search.setOnAction(e -> {
                 try{
                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
-                    String uName = userSearching.getText();
-                    query2 = "select * from Userlist where FirstName ='" + uName + "'";
+                    String username = userSearching.getText();
+                    query2 = "select * from Userlist where FirstName ='" + username + "'";
                     PreparedStatement stmt1 = conn.prepareStatement(query2);
                     rs1 = stmt1.executeQuery();
                     result.clear();
@@ -302,57 +309,89 @@ public class Main extends Application {
                             String em = (rs1.getString("Email"));
                             String msg = (rs1.getString("Msgs"));
                             result.appendText("User id:"+uid+"\n"
-                                + "Stfx Id:"+xid+"\n"
-                                + "Password:"+p+"\n"
-                                + "First Name:"+fn+"\n"
-                                + "Last Name"+ln+"\n"
-                                + "Major:"+m+"\n"
-                                + "JobTitle"+xid+"\n"
-                                + "Graduation Year:"+gy+"\n"
-                                + "Email:"+em+"\n"
-                                + "Messages:"+msg+"\n");// Get data from the current row and use it
+                                + "First Name: "+fn+"\n"
+                                + "Last Name: "+ln+"\n"
+                                + "Major: "+m+"\n"
+                                + "JobTitle: "+xid+"\n"
+                                + "Graduation Year: "+gy+"\n"
+                                + "Email: "+em+"\n");
+                                
                         } while (rs1.next());
                     }
-                    if(rs1.next()){
-                        result.clear();
-                        int uid = (rs1.getInt("UserID")); 
-                        int xid = (rs1.getInt("StfxID"));
-                        String p =(rs1.getString("Password")); 
-                        String fn =(rs1.getString("FirstName"));
-                        String ln =(rs1.getString("LastName"));
-                        String m =(rs1.getString("Major"));
-                        String jt = (rs1.getString("JobTitle"));
-                        int gy =(rs1.getInt("GradYear"));
-                        String em = (rs1.getString("Email"));
-                        String msg = (rs1.getString("Msgs"));
-                        result.appendText("User id:"+uid+"\n"
-                            + "Stfx Id:"+xid+"\n"
-                            + "Password:"+p+"\n"
-                            + "First Name:"+fn+"\n"
-                            + "Last Name"+ln+"\n"
-                            + "Major:"+m+"\n"
-                            + "JobTitle"+xid+"\n"
-                            + "Graduation Year:"+gy+"\n"
-                            + "Email:"+em+"\n"
-                            + "Messages:"+msg+"\n");
-                    } 
-                    else{
-                        System.out.print("No matching record, try again:");
-                    }
-
+                    
                 }
                 catch (Exception ex){
                     ex.printStackTrace();
                 }
             });
-        // back2.setOnAction(e -> primaryStage.setScene(scene1));
+         back2.setOnAction(e -> primaryStage.setScene(scene1));
         registerbtn.setOnAction(e -> primaryStage.setScene(scene3));
-        //back1.setOnAction(e -> primaryStage.setScene(scene1));
-        //yourProfile.setOnAction(e -> primaryStage.setScene(scene6));
-        //back4.setOnAction(e -> primaryStage.setScene(scene4));
-        //editYrProfile.setOnAction(e -> primaryStage.setScene(scene5));
-        //back3.setOnAction(e -> primaryStage.setScene(scene6));
-        //logOutUser.setOnAction(e -> primaryStage.close());
+        back1.setOnAction(e -> primaryStage.setScene(scene1));
+        yourProfile.setOnAction(e -> primaryStage.setScene(scene6));
+        back4.setOnAction(e -> primaryStage.setScene(scene4));
+        
+        saveEditsUser.setOnAction(e -> {
+            try{
+            String efn = firstname2.getText();
+                    String eln = lastname2.getText();
+                    String em = majorStudy2.getText();
+                    int eyg = Integer.parseInt(yearGraduated2.getText());
+                    int exid = Integer.parseInt(StfxID2.getText());
+                    String eem = email2.getText();
+                    String ejt = job2.getText();
+                    String erp = uppassword.getText();
+
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    query3 = "update Userlist set StfxID = '"+exid+ "', Password='"+erp+ "', FirstName='"+efn+ "', LastName='"+eln+ "', Major='"+eem+ "', JobTitle='"+ejt+ "', GradYear='"+eyg+ "', Email='"+eem+ "' where StfxID = '"+exid+ "'";
+                    PreparedStatement stmt2 = conn.prepareStatement(query3);            
+                    int insert = stmt2.executeUpdate();
+                    if(insert == 0){
+                        System.out.println("Update Unsuccesful");
+                        }
+                    else{
+                       System.out.println("Update Succesful");
+                        primaryStage.setScene(scene5);
+                        query2 = "select * from Userlist where StfxID ='" + exid + "'";
+                        PreparedStatement stmt1 = conn.prepareStatement(query2);
+                        rs1 = stmt1.executeQuery();
+                        if(rs1.next()){
+                            int uid = (rs1.getInt("UserID")); 
+                            int xid = (rs1.getInt("StfxID"));
+                            String p =(rs1.getString("Password")); 
+                            String fn =(rs1.getString("FirstName"));
+                            String ln =(rs1.getString("LastName"));
+                            String m =(rs1.getString("Major"));
+                            String jt = (rs1.getString("JobTitle"));
+                            int gy =(rs1.getInt("GradYear"));
+                            String email = (rs1.getString("Email"));
+                            String msg = (rs1.getString("Msgs"));
+                            result1.appendText("User id:"+uid+"\n"
+                                + "Stfx Id: "+xid+"\n"
+                                + "Password: "+p+"\n"
+                                + "First Name: "+fn+"\n"
+                                + "Last Name: "+ln+"\n"
+                                + "Major: "+m+"\n"
+                                + "JobTitle: "+xid+"\n"
+                                + "Graduation Year: "+gy+"\n"
+                                + "Email: "+email+"\n"
+                                + "Messages: "+msg+"\n");
+                    }
+
+                } }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            
+            
+            
+            primaryStage.setScene(scene5);
+        
+        
+        
+        
+        
+        });
+        back3.setOnAction(e -> primaryStage.setScene(scene6));
+        logOutUser.setOnAction(e -> primaryStage.close());
 
     }
 
