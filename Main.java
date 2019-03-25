@@ -32,12 +32,16 @@ public class Main extends Application {
     public Button back2 = new Button("Back");
     public Button back3 = new Button("Back");
     public Button back4 = new Button("Back");
+    public Button back5 = new Button("Back");
     public Button yourProfile = new Button("Profile");
     public Button editYrProfile = new Button("Edit Profile");
     public Button saveEditsUser = new Button("Save Changes");
     public Button logOutUser = new Button("Logout");
     public Button adminloginbtn = new Button("Login");
-    
+    public Button edits = new Button("Update/Add/Delete Entry");
+    public Button adminAdd = new Button("Add Entry");
+    public Button adminDelete= new Button("Delete Entry");
+    public Button adminUpdate= new Button("Update Entry");
 
     public TextField email = new TextField();
     public TextField firstname = new TextField();
@@ -48,6 +52,7 @@ public class Main extends Application {
     public TextField password = new TextField();
     public TextField regpassword = new TextField();
     public TextField uppassword = new TextField();
+    public TextField uppassword1 = new TextField();
     public TextField job = new TextField();
     public TextField majorStudy = new TextField();
     public TextField yearGraduated = new TextField();
@@ -65,6 +70,15 @@ public class Main extends Application {
     public TextField job2 = new TextField();
     public TextField majorStudy2 = new TextField();
     public TextField yearGraduated2 = new TextField();
+    
+    public TextField email3 = new TextField();
+    public TextField firstname3 = new TextField();
+    public TextField lastname3 = new TextField();
+    public TextField StfxID3 = new TextField();
+    public TextField password3 = new TextField();
+    public TextField job3 = new TextField();
+    public TextField majorStudy3 = new TextField();
+    public TextField yearGraduated3 = new TextField();
 
     public static String query, query2, query3, uName, pWord;
     private Connection conn;
@@ -108,6 +122,7 @@ public class Main extends Application {
         GridPane userEditAdmin = new GridPane();
         GridPane userResults = new GridPane();
         GridPane userEditUser = new GridPane();
+        GridPane adminEdit = new GridPane();
         GridPane userProfile = new GridPane();
 
         startScreen.add(lblExistUser, 2, 1);
@@ -156,6 +171,7 @@ public class Main extends Application {
         userEditAdmin.add(searchMajor, 3, 3);
         userEditAdmin.add(result2, 2, 5, 3, 5);
         userEditAdmin.add(logOutUser,1,12);
+        userEditAdmin.add(edits,4,3);
         
         
         
@@ -183,6 +199,28 @@ public class Main extends Application {
         userEditUser.add(upPassword,2,7);
         userEditUser.add(uppassword, 2, 8);
         userEditUser.add(result1, 1,11,3,5);
+        
+        adminEdit.add(back4,3,9);
+        adminEdit.add(adminAdd,3,10);
+        adminEdit.add(adminDelete,3,11);
+        adminEdit.add(adminUpdate,3,8);
+        adminEdit.add(firstName2, 1, 1);
+        adminEdit.add(lastName2, 2, 1);
+        adminEdit.add(firstname3, 1, 2);
+        adminEdit.add(lastname3, 2, 2);
+        adminEdit.add(major2, 1, 4);
+        adminEdit.add(majorStudy3, 1, 5);
+        adminEdit.add(gradYear2, 2, 4);
+        adminEdit.add(yearGraduated3, 2, 5);
+        adminEdit.add(yourXID2, 3, 1);
+        adminEdit.add(StfxID3, 3, 2);
+        adminEdit.add(emailAddress2, 3, 4);
+        adminEdit.add(email3, 3, 5);
+        adminEdit.add(jobTitle2, 1, 7);
+        adminEdit.add(job3, 1, 8);
+        adminEdit.add(upPassword,2,7);
+        adminEdit.add(uppassword1, 2, 8);
+        adminEdit.add(result1, 1,15,3,5);
 
         Scene scene1 = new Scene(startScreen, 650, 500);
         Scene scene2 = new Scene(loginScreen, 650, 500);
@@ -191,10 +229,12 @@ public class Main extends Application {
         Scene scene5 = new Scene(userEditUser,650,500);
         Scene scene6 = new Scene(userProfile,650,500);
         Scene scene7 = new Scene(userEditAdmin,650,500);
+        Scene scene8 = new Scene(adminEdit,650,500);
 
         primaryStage.setTitle("485 DB Project");
         primaryStage.setScene(scene1);
         primaryStage.show();
+        edits.setOnAction(e -> primaryStage.setScene(scene8));
         editYrProfile.setOnAction(e -> primaryStage.setScene(scene5));
         loginbtn.setOnAction(e -> primaryStage.setScene(scene2));
         adminloginbtn.setOnAction(e ->{
@@ -342,6 +382,66 @@ public class Main extends Application {
                         }}
                     else{
                         System.out.println("Registration Unsuccesful");
+                    }
+
+                } catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            });
+        adminAdd.setOnAction(e-> {
+                try{
+                    String rfn = firstname3.getText();
+                    String rln = lastname3.getText();
+                    String rm = majorStudy3.getText();
+                    int ryg = Integer.parseInt(yearGraduated3.getText());
+                    int rxid = Integer.parseInt(StfxID3.getText());
+                    String rem = email3.getText();
+                    String rjt = job3.getText();
+                    String rp = uppassword1.getText();
+
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    query3 = "insert into Userlist (StfxID, Password, FirstName, LastName, Major, JobTitle, GradYear, Email) values(?,?,?,?,?,?,?,?)";
+                    PreparedStatement stmt2 = conn.prepareStatement(query3);
+                    stmt2.setInt(1, rxid);
+                    stmt2.setString(2,rp );
+                    stmt2.setString(3, rfn);
+                    stmt2.setString(4, rln);
+                    stmt2.setString(5, rm);
+                    stmt2.setString(6, rjt);
+                    stmt2.setInt(7, ryg);
+                    stmt2.setString(8, rem);             
+                    boolean insert = stmt2.execute();
+                    if(insert == false){
+                        result1.clear();
+                        result1.appendText("Registration Succesful"); 
+                        query2 = "select * from Userlist where StfxID ='" + rxid + "'";
+                        PreparedStatement stmt1 = conn.prepareStatement(query2);
+                        rs1 = stmt1.executeQuery();
+                        if(rs1.next()){
+                            int uid = (rs1.getInt("UserID")); 
+                            int xid = (rs1.getInt("StfxID"));
+                            String p =(rs1.getString("Password")); 
+                            String fn =(rs1.getString("FirstName"));
+                            String ln =(rs1.getString("LastName"));
+                            String m =(rs1.getString("Major"));
+                            String jt = (rs1.getString("JobTitle"));
+                            int gy =(rs1.getInt("GradYear"));
+                            String em = (rs1.getString("Email"));
+                            String msg = (rs1.getString("Msgs"));
+                            result1.appendText("User id:"+uid+"\n"
+                                + "Stfx Id: "+xid+"\n"
+                                + "Password: "+p+"\n"
+                                + "First Name: "+fn+"\n"
+                                + "Last Name: "+ln+"\n"
+                                + "Major: "+m+"\n"
+                                + "JobTitle: "+xid+"\n"
+                                + "Graduation Year: "+gy+"\n"
+                                + "Email: "+em+"\n"
+                                + "Messages: "+msg+"\n");
+                        }}
+                    else{
+                        result1.clear();
+                        result1.appendText("Registration Unsuccesful");
                     }
 
                 } catch(Exception ex){
@@ -530,16 +630,67 @@ public class Main extends Application {
                     ex.printStackTrace();
                 }
             
-            
-            
             primaryStage.setScene(scene5);
         
-        
-        
-        
-        
+        });
+        adminUpdate.setOnAction(e -> {
+            try{
+            String efn = firstname3.getText();
+                    String eln = lastname3.getText();
+                    String em = majorStudy3.getText();
+                    int eyg = Integer.parseInt(yearGraduated3.getText());
+                    int exid = Integer.parseInt(StfxID3.getText());
+                    String eem = email3.getText();
+                    String ejt = job3.getText();
+                    String erp = uppassword1.getText();
+
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    query3 = "update Userlist set StfxID = '"+exid+ "', Password='"+erp+ "', FirstName='"+efn+ "', LastName='"+eln+ "', Major='"+eem+ "', JobTitle='"+ejt+ "', GradYear='"+eyg+ "', Email='"+eem+ "' where StfxID = '"+exid+ "'";
+                    PreparedStatement stmt2 = conn.prepareStatement(query3);            
+                    int insert = stmt2.executeUpdate();
+                    if(insert == 0){
+                        result1.clear();
+                        result1.appendText("Update Unsuccesful");
+                        }
+                    else{
+                        result1.clear();
+                        result1.appendText("Update Succesful");
+                        primaryStage.setScene(scene5);
+                        query2 = "select * from Userlist where StfxID ='" + exid + "'";
+                        PreparedStatement stmt1 = conn.prepareStatement(query2);
+                        rs1 = stmt1.executeQuery();
+                        if(rs1.next()){
+                            int uid = (rs1.getInt("UserID")); 
+                            int xid = (rs1.getInt("StfxID"));
+                            String p =(rs1.getString("Password")); 
+                            String fn =(rs1.getString("FirstName"));
+                            String ln =(rs1.getString("LastName"));
+                            String m =(rs1.getString("Major"));
+                            String jt = (rs1.getString("JobTitle"));
+                            int gy =(rs1.getInt("GradYear"));
+                            String email = (rs1.getString("Email"));
+                            String msg = (rs1.getString("Msgs"));
+                            result1.appendText("User id:"+uid+"\n"
+                                + "Stfx Id: "+xid+"\n"
+                                + "Password: "+p+"\n"
+                                + "First Name: "+fn+"\n"
+                                + "Last Name: "+ln+"\n"
+                                + "Major: "+m+"\n"
+                                + "JobTitle: "+xid+"\n"
+                                + "Graduation Year: "+gy+"\n"
+                                + "Email: "+email+"\n"
+                                + "Messages: "+msg+"\n");
+                    }
+
+                } }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            
+            primaryStage.setScene(scene8);
+       
         });
         back3.setOnAction(e -> primaryStage.setScene(scene6));
+        back5.setOnAction(e -> primaryStage.setScene(scene7));
         logOutUser.setOnAction(e -> primaryStage.close());
 
     }
