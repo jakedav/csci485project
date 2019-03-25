@@ -1,5 +1,4 @@
 
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
@@ -25,7 +24,8 @@ public class Main extends Application {
     public Button loginbtn2 = new Button("Login");
     public Button registerbtn = new Button("Register");
     public Button search = new Button("Search");
-    public Button searchName = new Button("Search");
+    public Button searchName = new Button("Search Name");
+    public Button searchMajor = new Button("Search Major");
     public Button editUser = new Button("Edit User");
     public Button regUserbtn = new Button("Register");
     public Button back1 = new Button("Back");
@@ -153,6 +153,7 @@ public class Main extends Application {
         userEditAdmin.add(searchuserName, 2, 1);
         userEditAdmin.add(adminUserSearching, 2, 2);
         userEditAdmin.add(searchName, 2, 3);
+        userEditAdmin.add(searchMajor, 3, 3);
         userEditAdmin.add(result2, 2, 5, 3, 5);
         userEditAdmin.add(logOutUser,1,12);
         
@@ -357,8 +358,8 @@ public class Main extends Application {
                     result.clear();
                     if (!rs1.next())
                     {                            
-
-                        System.out.println("No records found");
+                        result2.clear();
+                        result2.appendText("No records found");
                     }
                     else {
                         do {
@@ -404,8 +405,50 @@ public class Main extends Application {
                     result.clear();
                     if (!rs1.next())
                     {                            
+                        result.clear();
+                        result.appendText("No records found");
+                    }
+                    else {
+                        do {
 
-                        System.out.println("No records found");
+                            int uid = (rs1.getInt("UserID")); 
+                            int xid = (rs1.getInt("StfxID"));
+                            String p =(rs1.getString("Password")); 
+                            String fn =(rs1.getString("FirstName"));
+                            String ln =(rs1.getString("LastName"));
+                            String m =(rs1.getString("Major"));
+                            String jt = (rs1.getString("JobTitle"));
+                            int gy =(rs1.getInt("GradYear"));
+                            String em = (rs1.getString("Email"));
+                            String msg = (rs1.getString("Msgs"));
+                            result2.appendText("User id:"+uid+"\n"
+                                + "First Name: "+fn+"\n"
+                                + "Last Name: "+ln+"\n"
+                                + "Major: "+m+"\n"
+                                + "JobTitle: "+xid+"\n"
+                                + "Graduation Year: "+gy+"\n"
+                                + "Email: "+em+"\n");
+                                
+                        } while (rs1.next());
+                    }
+                    
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            });
+        searchMajor.setOnAction(e -> {
+                try{
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    String username = adminUserSearching.getText();
+                    query2 = "select * from Userlist where Major ='" + username + "'";
+                    PreparedStatement stmt1 = conn.prepareStatement(query2);
+                    rs1 = stmt1.executeQuery();
+                    result.clear();
+                    if (!rs1.next())
+                    {   
+                        result2.clear();
+                        result2.appendText("No records found");
                     }
                     else {
                         do {
