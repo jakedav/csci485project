@@ -26,6 +26,7 @@ public class Main extends Application {
     public Button search = new Button("Search");
     public Button searchName = new Button("Search Name");
     public Button searchMajor = new Button("Search Major");
+    public Button searchEmailMajor = new Button("Search Emails by Major");
     public Button editUser = new Button("Edit User");
     public Button regUserbtn = new Button("Register");
     public Button back1 = new Button("Back");
@@ -42,6 +43,10 @@ public class Main extends Application {
     public Button adminAdd = new Button("Add Entry");
     public Button adminDelete= new Button("Delete Entry");
     public Button adminUpdate= new Button("Update Entry");
+    public Button sendEmail = new Button("Send Email");
+    
+    
+    
 
     public TextField email = new TextField();
     public TextField firstname = new TextField();
@@ -61,6 +66,8 @@ public class Main extends Application {
     public TextArea result = new TextArea();
     public TextArea result1 = new TextArea();
     public TextArea result2 = new TextArea();
+    public TextArea result3 = new TextArea();
+    public TextArea result4 = new TextArea();
 
     public TextField email2 = new TextField();
     public TextField firstname2 = new TextField();
@@ -101,8 +108,10 @@ public class Main extends Application {
     public Label searchuserName = new Label("Search for user");
     public Label edituser = new Label("Edit User");
     public Label upPassword = new Label("Password");
+    public Label upPassword1 = new Label("Password");
     public Label adminLogin = new Label("Admin? Login below!");
-    
+    public Label recipients = new Label("Send Message To:");
+    public Label body = new Label("Body:");
 
     public Label firstName2 = new Label("First Name");
     public Label lastName2 = new Label("Last Name");
@@ -111,6 +120,14 @@ public class Main extends Application {
     public Label yourXID2 = new Label("Stfx ID");
     public Label jobTitle2 = new Label("Job Title");
     public Label emailAddress2 = new Label("Email");
+    
+    public Label firstName3 = new Label("First Name");
+    public Label lastName3 = new Label("Last Name");
+    public Label major3 = new Label("Major (Ie: Mathematics, Computer Science, Statistics, etc.)");
+    public Label gradYear3 = new Label("Graduated Year");
+    public Label yourXID3 = new Label("Stfx ID");
+    public Label jobTitle3 = new Label("Job Title");
+    public Label emailAddress3 = new Label("Email");
 
     @Override
     public void start(Stage primaryStage) {
@@ -124,6 +141,7 @@ public class Main extends Application {
         GridPane userEditUser = new GridPane();
         GridPane adminEdit = new GridPane();
         GridPane userProfile = new GridPane();
+        GridPane adminEmail = new GridPane();
 
         startScreen.add(lblExistUser, 2, 1);
         startScreen.add(loginbtn, 2, 2);
@@ -169,11 +187,17 @@ public class Main extends Application {
         userEditAdmin.add(adminUserSearching, 2, 2);
         userEditAdmin.add(searchName, 2, 3);
         userEditAdmin.add(searchMajor, 3, 3);
+        userEditAdmin.add(searchEmailMajor, 5, 3);
         userEditAdmin.add(result2, 2, 5, 3, 5);
-        userEditAdmin.add(logOutUser,1,12);
+        userEditAdmin.add(logOutUser,1,15);
         userEditAdmin.add(edits,4,3);
         
         
+        adminEmail.add(recipients,2,1);
+        adminEmail.add(result3, 2,5,3,5);
+        adminEmail.add(body,2,11);
+        adminEmail.add(result4, 2,12,3,5);
+        adminEmail.add(sendEmail, 2,17);
         
         userProfile.add(editYrProfile,3,8);
         userProfile.add(back4,3,9);
@@ -204,21 +228,21 @@ public class Main extends Application {
         adminEdit.add(adminAdd,3,10);
         adminEdit.add(adminDelete,3,11);
         adminEdit.add(adminUpdate,3,8);
-        adminEdit.add(firstName2, 1, 1);
-        adminEdit.add(lastName2, 2, 1);
+        adminEdit.add(firstName3, 1, 1);
+        adminEdit.add(lastName3, 2, 1);
         adminEdit.add(firstname3, 1, 2);
         adminEdit.add(lastname3, 2, 2);
-        adminEdit.add(major2, 1, 4);
+        adminEdit.add(major3, 1, 4);
         adminEdit.add(majorStudy3, 1, 5);
-        adminEdit.add(gradYear2, 2, 4);
+        adminEdit.add(gradYear3, 2, 4);
         adminEdit.add(yearGraduated3, 2, 5);
-        adminEdit.add(yourXID2, 3, 1);
+        adminEdit.add(yourXID3, 3, 1);
         adminEdit.add(StfxID3, 3, 2);
-        adminEdit.add(emailAddress2, 3, 4);
+        adminEdit.add(emailAddress3, 3, 4);
         adminEdit.add(email3, 3, 5);
-        adminEdit.add(jobTitle2, 1, 7);
+        adminEdit.add(jobTitle3, 1, 7);
         adminEdit.add(job3, 1, 8);
-        adminEdit.add(upPassword,2,7);
+        adminEdit.add(upPassword1,2,7);
         adminEdit.add(uppassword1, 2, 8);
         adminEdit.add(result1, 1,15,3,5);
 
@@ -230,13 +254,28 @@ public class Main extends Application {
         Scene scene6 = new Scene(userProfile,650,500);
         Scene scene7 = new Scene(userEditAdmin,650,500);
         Scene scene8 = new Scene(adminEdit,650,500);
-
+        Scene scene9 = new Scene(adminEmail,650,500);
         primaryStage.setTitle("485 DB Project");
         primaryStage.setScene(scene1);
         primaryStage.show();
         edits.setOnAction(e -> primaryStage.setScene(scene8));
         editYrProfile.setOnAction(e -> primaryStage.setScene(scene5));
         loginbtn.setOnAction(e -> primaryStage.setScene(scene2));
+        sendEmail.setOnAction(e -> {
+                try{
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    String[] emails = result3.getText().toString().split(",");
+                    String pWord = password.getText();
+                    query = "select * from Adminlist where adminID ='" + uName + "' and password= '" + pWord + "'";
+                    PreparedStatement stmt = conn.prepareStatement(query);
+                    rs = stmt.executeQuery();
+            
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+        });
+        
         adminloginbtn.setOnAction(e ->{
                 try{
                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
@@ -455,7 +494,7 @@ public class Main extends Application {
                     query2 = "select * from Userlist where FirstName ='" + username + "'";
                     PreparedStatement stmt1 = conn.prepareStatement(query2);
                     rs1 = stmt1.executeQuery();
-                    result.clear();
+                    
                     if (!rs1.next())
                     {                            
                         result2.clear();
@@ -570,6 +609,38 @@ public class Main extends Application {
                                 + "JobTitle: "+xid+"\n"
                                 + "Graduation Year: "+gy+"\n"
                                 + "Email: "+em+"\n");
+                                
+                        } while (rs1.next());
+                    }
+                    
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            });
+        searchEmailMajor.setOnAction(e -> {
+                try{
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    String username = adminUserSearching.getText();
+                    query2 = "select Email from Userlist where Major ='" + username + "'";
+                   
+                    PreparedStatement stmt1 = conn.prepareStatement(query2);
+                    rs1 = stmt1.executeQuery();
+                    primaryStage.setScene(scene9);
+                    result3.clear();
+                    
+                    if (!rs1.next())
+                    {   
+                        result3.clear();
+                        result3.appendText("No records found");
+                    }
+                    else {
+                        do {
+                             
+                            String em = (rs1.getString("Email"));
+                            result3.appendText(
+                                 
+                                ""+em+",");
                                 
                         } while (rs1.next());
                     }
