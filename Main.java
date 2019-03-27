@@ -44,6 +44,7 @@ public class Main extends Application {
     public Button adminDelete= new Button("Delete Entry");
     public Button adminUpdate= new Button("Update Entry");
     public Button sendEmail = new Button("Send Email");
+    public Button deleteMsgs = new Button("Delete Emails");
     
     
     
@@ -68,6 +69,7 @@ public class Main extends Application {
     public TextArea result2 = new TextArea();
     public TextArea result3 = new TextArea();
     public TextArea result4 = new TextArea();
+    public TextArea msgs = new TextArea();
 
     public TextField email2 = new TextField();
     public TextField firstname2 = new TextField();
@@ -90,7 +92,8 @@ public class Main extends Application {
     public static String query, query2, query3, uName, pWord;
     private Connection conn;
     private ResultSet rs,rs1,rs2;
-
+    public String uuName= "";
+    
     public Label lblStatus = new Label();
     public Label lblNewUser = new Label("New User? Register below!");
     public Label lblExistUser = new Label("Already a user? Login below!");
@@ -199,8 +202,10 @@ public class Main extends Application {
         adminEmail.add(result4, 2,12,3,5);
         adminEmail.add(sendEmail, 2,17);
         
-        userProfile.add(editYrProfile,3,8);
-        userProfile.add(back4,3,9);
+        userProfile.add(editYrProfile,2,11);
+        userProfile.add(msgs,2,5,3,5);
+        userProfile.add(deleteMsgs,2,12);
+        userProfile.add(back5,2,13);
 
         //        userEditAdmin.add();
 
@@ -261,16 +266,76 @@ public class Main extends Application {
         edits.setOnAction(e -> primaryStage.setScene(scene8));
         editYrProfile.setOnAction(e -> primaryStage.setScene(scene5));
         loginbtn.setOnAction(e -> primaryStage.setScene(scene2));
+        
+        deleteMsgs.setOnAction(e -> {
+            try{
+                  
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    query3 = "update Userlist set Msgs = '"+null+ "' where StfxID = '"+uuName+ "'";
+                    PreparedStatement stmt2 = conn.prepareStatement(query3);            
+                    int insert = stmt2.executeUpdate();
+                    if(insert == 0){
+                        msgs.appendText("Update Unsuccesful");
+                        }
+                    else{
+                        msgs.clear();
+                        msgs.appendText("Update Successful");
+                        query2 = "select * from Userlist where StfxID ='" + uuName + "'";
+                        PreparedStatement stmt1 = conn.prepareStatement(query2);
+                        rs1 = stmt1.executeQuery();
+                        if(rs1.next()){
+                            int uid = (rs1.getInt("UserID")); 
+                            int xid = (rs1.getInt("StfxID"));
+                            String p =(rs1.getString("Password")); 
+                            String fn =(rs1.getString("FirstName"));
+                            String ln =(rs1.getString("LastName"));
+                            String m =(rs1.getString("Major"));
+                            String jt = (rs1.getString("JobTitle"));
+                            int gy =(rs1.getInt("GradYear"));
+                            String email = (rs1.getString("Email"));
+                            String msg = (rs1.getString("Msgs"));
+                            msgs.appendText("User id:"+uid+"\n"
+                                + "Stfx Id: "+xid+"\n"
+                                + "Password: "+p+"\n"
+                                + "First Name: "+fn+"\n"
+                                + "Last Name: "+ln+"\n"
+                                + "Major: "+m+"\n"
+                                + "JobTitle: "+xid+"\n"
+                                + "Graduation Year: "+gy+"\n"
+                                + "Email: "+email+"\n"
+                                + "Messages: "+msg+"\n");
+                }
+            
+            
+            
+            
+            }}
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+        
+        });
         sendEmail.setOnAction(e -> {
                 try{
-                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    String ta = result4.getText();
                     String[] emails = result3.getText().toString().split(",");
-                    String pWord = password.getText();
-                    query = "select * from Adminlist where adminID ='" + uName + "' and password= '" + pWord + "'";
-                    PreparedStatement stmt = conn.prepareStatement(query);
-                    rs = stmt.executeQuery();
-            
+                    for(int i=0;i<emails.length;i++){
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    query3 = "update Userlist set Msgs = '"+ta+ "' where Email = '"+emails[i]+ "'";
+                    PreparedStatement stmt2 = conn.prepareStatement(query3);            
+                    int insert = stmt2.executeUpdate();
+                    if(insert == 0){
+                        result4.appendText("Update Unsuccesful");
+                        }
+                    else{
+                        result4.clear();
+                        result4.appendText("Update Successful");
                 }
+            
+            
+            
+            
+            }}
                 catch (Exception ex){
                     ex.printStackTrace();
                 }
@@ -325,9 +390,9 @@ public class Main extends Application {
         loginbtn2.setOnAction(e -> {
                 try{
                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
-                    String uName = ID.getText();
+                    uuName = ID.getText();
                     String pWord = password.getText();
-                    query = "select * from Userlist where StfxID ='" + uName + "' and Password= '" + pWord + "'";
+                    query = "select * from Userlist where StfxID ='" + uuName + "' and Password= '" + pWord + "'";
                     PreparedStatement stmt = conn.prepareStatement(query);
                     rs = stmt.executeQuery();
                     if (rs.next()){
@@ -532,8 +597,41 @@ public class Main extends Application {
          back2.setOnAction(e -> primaryStage.setScene(scene1));
         registerbtn.setOnAction(e -> primaryStage.setScene(scene3));
         back1.setOnAction(e -> primaryStage.setScene(scene1));
-        yourProfile.setOnAction(e -> primaryStage.setScene(scene6));
         back4.setOnAction(e -> primaryStage.setScene(scene4));
+        yourProfile.setOnAction(e -> {
+                try{
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    
+                    query2 = "select Msgs from Userlist where StfxId ='" + uuName + "'";
+                   
+                    PreparedStatement stmt1 = conn.prepareStatement(query2);
+                    rs1 = stmt1.executeQuery();
+                    primaryStage.setScene(scene6);
+                    msgs.clear();
+                    
+                    if (!rs1.next())
+                    {   
+                        msgs.clear();
+                        msgs.appendText("No records found");
+                    }
+                    else {
+                        do {
+                             
+                            String em = (rs1.getString("Msgs"));
+                            msgs.appendText(
+                                 
+                                ""+em+",");
+                                
+                        } while (rs1.next());
+                    }
+                    
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            });
+        
+        
         searchName.setOnAction(e -> {
                 try{
                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
@@ -726,7 +824,7 @@ public class Main extends Application {
                     else{
                         result1.clear();
                         result1.appendText("Update Succesful");
-                        primaryStage.setScene(scene5);
+                        
                         query2 = "select * from Userlist where StfxID ='" + exid + "'";
                         PreparedStatement stmt1 = conn.prepareStatement(query2);
                         rs1 = stmt1.executeQuery();
@@ -754,6 +852,30 @@ public class Main extends Application {
                     }
 
                 } }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            
+            primaryStage.setScene(scene8);
+       
+        });
+        adminDelete.setOnAction(e -> {
+            try{
+                    int exid = Integer.parseInt(StfxID3.getText());
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduate?autoReconnect=true&useSSL=false","root","jacobdavis");
+                    query3 = "delete from Userlist where StfxID = '"+exid+ "'";
+                    PreparedStatement stmt2 = conn.prepareStatement(query3);            
+                    int insert = stmt2.executeUpdate();
+                    if(insert == 0){
+                        result1.clear();
+                        result1.appendText("Update Unsuccesful");
+                        }
+                    else{
+                        result1.clear();
+                        result1.appendText("Update Succesful");
+                       
+                    }
+
+                } catch(Exception ex){
                     ex.printStackTrace();
                 }
             
